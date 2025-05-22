@@ -33,12 +33,11 @@ export default async function handler(req, res) {
     console.log("✅ Token received. Now fetching listings...");
 
     const filter = [
-      'buyingOptions:{FIXED_PRICE}',
       'itemLocationCountry:US',
-      'conditionIds:{1000|3000}'
+      'conditionIds:{1000|3000}' // New and Used
     ].join(',');
 
-    const searchURL = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchTerm)}&category_ids=${categoryId}&filter=${filter}&sort=ENDING_SOONEST&limit=20`;
+    const searchURL = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchTerm)}&category_ids=${categoryId}&filter=${filter}&sort=ENDING_SOONEST&limit=100`;
 
     const response = await fetch(searchURL, {
       headers: {
