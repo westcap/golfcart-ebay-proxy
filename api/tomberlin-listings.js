@@ -20,13 +20,21 @@ export default async function handler(req, res) {
       body: 'grant_type=client_credentials&scope=https://api.ebay.com/oauth/api_scope',
     });
 
-    const tokenData = await tokenRes.json();
-    console.log("Token response:", tokenData);
+let tokenData;
+try {
+  tokenData = await tokenRes.json();
+} catch (parseErr) {
+  console.error("Failed to parse token response:", await tokenRes.text());
+  throw new Error("Could not parse token response");
+}
 
-    const token = tokenData.access_token;
-    if (!token) {
-      throw new Error("No access token received");
-    }
+console.log("Token response raw:", tokenData);
+
+const token = tokenData.access_token;
+if (!token) {
+  throw new Error("No access token received — raw response:\n" + JSON.stringify(tokenData, null, 2));
+}
+
 
     console.log("Token acquired. Fetching listings...");
     const filter = 'categoryIds:181476,conditions:{NEW,USED,OPEN_BOX}';
