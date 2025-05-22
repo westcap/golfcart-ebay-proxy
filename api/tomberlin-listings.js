@@ -1,58 +1,53 @@
 export default async function handler(req, res) {
-  console.log("Function started");
+  console.log("🔧 Serverless function started...");
 
   const clientId = 'WestCapL-GolfCart-PRD-ff04600b9-577103ed';
-  const clientSecret = '23fb20dbd-2860-4fa6-96da-e02e47cd88b4';
+  const clientSecret = 'PRD-f04600b914a6-c74e-43c1-a342-aa43';
   const campaignId = req.query.campaignId || '5339111183';
   const searchTerm = req.query.query || 'Tomberlin Golf Cart';
   const customId = req.query.customid || 'tomberlingolfcarts';
 
-  const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+  const authHeader = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
   try {
-    console.log("Fetching token...");
+    console.log("🔑 Requesting access token from eBay...");
+
     const tokenRes = await fetch('https://api.ebay.com/identity/v1/oauth2/token', {
       method: 'POST',
       headers: {
-        Authorization: `Basic ${auth}`,
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': `Basic ${authHeader}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
       },
-      body: 'grant_type=client_credentials&scope=https://api.ebay.com/oauth/api_scope',
+      body: 'grant_type=client_credentials&scope=https://api.ebay.com/oauth/api_scope'
     });
 
-let tokenData;
-try {
-  tokenData = await tokenRes.json();
-} catch (parseErr) {
-  console.error("Failed to parse token response:", await tokenRes.text());
-  throw new Error("Could not parse token response");
-}
+    const tokenData = await tokenRes.json();
+    console.log("🔐 Token response:", tokenData);
 
-console.log("Token response raw:", tokenData);
+    const token = tokenData.access_token;
+    if (!token) {
+      throw new Error("No access token received — full response: " + JSON.stringify(tokenData, null, 2));
+    }
 
-const token = tokenData.access_token;
-if (!token) {
-  throw new Error("No access token received — raw response:\n" + JSON.stringify(tokenData, null, 2));
-}
+    console.log("✅ Token received. Now fetching listings...");
 
-
-    console.log("Token acquired. Fetching listings...");
     const filter = 'categoryIds:181476,conditions:{NEW,USED,OPEN_BOX}';
-    const response = await fetch(`https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchTerm)}&filter=${filter}&limit=8`, {
+    const searchURL = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchTerm)}&filter=${filter}&limit=8`;
+
+    const response = await fetch(searchURL, {
       headers: {
-        Authorization: `Bearer ${token}`,
-        'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US',
-      },
+        'Authorization': `Bearer ${token}`,
+        'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US'
+      }
     });
 
     const data = await response.json();
-    console.log("Browse API response:", JSON.stringify(data, null, 2));
+    console.log("📦 Listing data:", JSON.stringify(data, null, 2));
 
     const items = data.itemSummaries || [];
 
     if (items.length === 0) {
-      console.log("No items found.");
-      res.status(200).send("<p>No listings found. Please try again soon.</p>");
+      res.status(200).send("<p>No listings found. Please check back soon.</p>");
       return;
     }
 
@@ -68,8 +63,9 @@ if (!token) {
 
     res.setHeader('Cache-Control', 's-maxage=600, stale-while-revalidate');
     res.status(200).send(html);
+
   } catch (err) {
-    console.error("ERROR:", err);
+    console.error("❌ ERROR:", err);
     res.status(500).send(`<pre>Server error: ${err.message}</pre>`);
   }
 }
