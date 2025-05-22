@@ -4,8 +4,8 @@ export default async function handler(req, res) {
   const clientId = 'WestCapL-GolfCart-PRD-ff04600b9-577103ed';
   const clientSecret = 'PRD-f04600b914a6-c74e-43c1-a342-aa43';
   const campaignId = req.query.campaignId || '5339111183';
-  const searchTerm = req.query.query || 'Tomberlin Golf Cart';
   const customId = req.query.customid || 'tomberlingolfcarts';
+  const searchTerm = req.query.query || 'Golf Cart';
 
   const authHeader = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
@@ -31,8 +31,15 @@ export default async function handler(req, res) {
 
     console.log("✅ Token received. Now fetching listings...");
 
-    const filter = 'categoryIds:181476,conditions:{NEW,USED,OPEN_BOX}';
-    const searchURL = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchTerm)}&filter=${filter}&limit=8`;
+    const filter = [
+      'categoryIds:181476',
+      'conditions:{1000|3000|10}', // New, Used, Open Box
+      'aspectFilters.brand:{Tomberlin}',
+      'buyingOptions:{FIXED_PRICE}',
+      'itemLocationCountry:US'
+    ].join(',');
+
+    const searchURL = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchTerm)}&filter=${filter}&sort=NEWLY_LISTED&limit=8`;
 
     const response = await fetch(searchURL, {
       headers: {
