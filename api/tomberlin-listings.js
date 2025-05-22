@@ -6,6 +6,7 @@ export default async function handler(req, res) {
   const campaignId = req.query.campaignId || '5339111183';
   const customId = req.query.customid || 'tomberlingolfcarts';
   const searchTerm = req.query.query || 'Golf Cart';
+  const categoryId = '181476'; // Golf Carts
 
   const authHeader = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
@@ -31,7 +32,6 @@ export default async function handler(req, res) {
 
     console.log("✅ Token received. Now fetching listings...");
 
-    const categoryId = '181476'; // Golf Carts
     const filter = [
       'buyingOptions:{FIXED_PRICE}',
       'itemLocationCountry:US',
@@ -39,7 +39,7 @@ export default async function handler(req, res) {
     ].join(',');
 
     const aspectFilter = `categoryId:${categoryId},Brand:{Tomberlin}`;
-    const searchURL = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchTerm)}&category_ids=${categoryId}&filter=${filter}&aspect_filter=${encodeURIComponent(aspectFilter)}&sort=ENDING_SOONEST&limit=8`;
+    const searchURL = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchTerm)}&category_ids=${categoryId}&filter=${filter}&aspect_filter=${encodeURIComponent(aspectFilter)}&sort=ENDING_SOONEST&limit=20`;
 
     const response = await fetch(searchURL, {
       headers: {
