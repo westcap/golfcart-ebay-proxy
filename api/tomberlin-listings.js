@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   const clientSecret = 'PRD-f04600b914a6-c74e-43c1-a342-aa43';
   const campaignId = req.query.campaignId || '5339111183';
   const customId = req.query.customid || 'tomberlingolfcarts';
-  const searchTerm = req.query.query || '"Tomberlin Golf Cart"';
+  const searchTerm = req.query.query || 'Tomberlin';
   const categoryId = '181476'; // Golf Carts
 
   const authHeader = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
