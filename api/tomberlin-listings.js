@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   const clientSecret = 'PRD-f04600b914a6-c74e-43c1-a342-aa43';
   const campaignId = req.query.campaignId || '5339111183';
   const customId = req.query.customid || 'tomberlingolfcarts';
-  const searchTerm = req.query.query || 'Golf Cart';
+  const searchTerm = req.query.query || '"Tomberlin Golf Cart"';
   const categoryId = '181476'; // Golf Carts
 
   const authHeader = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
@@ -38,8 +38,7 @@ export default async function handler(req, res) {
       'conditionIds:{1000|3000}'
     ].join(',');
 
-    const aspectFilter = `categoryId:${categoryId},Brand:{Tomberlin}`;
-    const searchURL = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchTerm)}&category_ids=${categoryId}&filter=${filter}&aspect_filter=${encodeURIComponent(aspectFilter)}&sort=ENDING_SOONEST&limit=20`;
+    const searchURL = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchTerm)}&category_ids=${categoryId}&filter=${filter}&sort=ENDING_SOONEST&limit=20`;
 
     const response = await fetch(searchURL, {
       headers: {
