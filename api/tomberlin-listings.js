@@ -31,15 +31,15 @@ export default async function handler(req, res) {
 
     console.log("✅ Token received. Now fetching listings...");
 
+    const categoryId = '181476'; // Golf Carts
     const filter = [
-      'categoryIds:181476',
-      'conditions:{1000|3000|10}', // New, Used, Open Box
-      'aspectFilters.brand:{Tomberlin}',
       'buyingOptions:{FIXED_PRICE}',
-      'itemLocationCountry:US'
+      'itemLocationCountry:US',
+      'conditionIds:{1000|3000}'
     ].join(',');
 
-    const searchURL = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchTerm)}&filter=${filter}&sort=NEWLY_LISTED&limit=8`;
+    const aspectFilter = `categoryId:${categoryId},Brand:{Tomberlin}`;
+    const searchURL = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchTerm)}&category_ids=${categoryId}&filter=${filter}&aspect_filter=${encodeURIComponent(aspectFilter)}&sort=ENDING_SOONEST&limit=8`;
 
     const response = await fetch(searchURL, {
       headers: {
