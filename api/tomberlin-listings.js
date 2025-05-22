@@ -1,18 +1,14 @@
 export default async function handler(req, res) {
-  console.log("🔧 Serverless function started...");
-
   const clientId = 'WestCapL-GolfCart-PRD-ff04600b9-577103ed';
   const clientSecret = 'PRD-f04600b914a6-c74e-43c1-a342-aa43';
   const campaignId = req.query.campaignId || '5339111183';
   const customId = req.query.customid || 'clubcarcarts';
   const searchTerm = req.query.query || 'Club Car';
-  const categoryId = '181476'; // Golf Carts
+  const categoryId = '181476';
 
   const authHeader = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
   try {
-    console.log("🔑 Requesting access token from eBay...");
-
     const tokenRes = await fetch('https://api.ebay.com/identity/v1/oauth2/token', {
       method: 'POST',
       headers: {
@@ -23,18 +19,12 @@ export default async function handler(req, res) {
     });
 
     const tokenData = await tokenRes.json();
-    console.log("🔐 Token response:", tokenData);
-
     const token = tokenData.access_token;
-    if (!token) {
-      throw new Error("No access token received — full response: " + JSON.stringify(tokenData, null, 2));
-    }
-
-    console.log("✅ Token received. Now fetching listings...");
+    if (!token) throw new Error("No access token received");
 
     const filter = [
       'itemLocationCountry:US',
-      'conditionIds:{1000|3000}' // New and Used
+      'conditionIds:{1000|3000}'
     ].join(',');
 
     const searchURL = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchTerm)}&category_ids=${categoryId}&filter=${filter}&sort=ENDING_SOONEST&limit=100`;
@@ -47,8 +37,6 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
-    console.log("📦 Listing data:", JSON.stringify(data, null, 2));
-
     const items = data.itemSummaries || [];
 
     if (items.length === 0) {
@@ -71,6 +59,9 @@ export default async function handler(req, res) {
           background-color: #fff;
           text-align: center;
           padding: 16px;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
           transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
@@ -80,23 +71,39 @@ export default async function handler(req, res) {
         }
         .ebay-card img {
           width: 100%;
-          height: auto;
-          max-height: 200px;
-          object-fit: contain;
-          margin-bottom: 12px;
+          height: 180px;
+          object-fit: cover;
           border-radius: 8px;
+          margin-bottom: 12px;
         }
         .ebay-card h4 {
           font-size: 16px;
-          margin: 10px 0;
           color: #1f2937;
-          height: 48px;
+          margin: 0 0 8px;
+          height: 3.2em;
           overflow: hidden;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
         }
         .ebay-card p {
           font-weight: bold;
           font-size: 15px;
           color: #10b981;
+          margin: 0 0 12px;
+        }
+        .ebay-card a.button {
+          background: #0070f3;
+          color: #fff;
+          padding: 10px 14px;
+          border-radius: 6px;
+          text-decoration: none;
+          font-weight: 600;
+          font-size: 14px;
+          transition: background 0.2s ease;
+        }
+        .ebay-card a.button:hover {
+          background: #005ac1;
         }
         @media (max-width: 600px) {
           .ebay-grid {
@@ -108,11 +115,10 @@ export default async function handler(req, res) {
       <div class="ebay-grid">
         ${items.map(item => `
           <div class="ebay-card">
-            <a href="${item.itemWebUrl}?mkevt=1&mkcid=1&mkrid=711-53200-19255-0&campid=${campaignId}&customid=${customId}&toolid=10001" target="_blank" style="text-decoration:none; color:inherit;">
-              <img src="${item.image?.imageUrl}" alt="${item.title}" />
-              <h4>${item.title}</h4>
-              <p>${item.price.value} ${item.price.currency}</p>
-            </a>
+            <img src="${item.image?.imageUrl}" alt="${item.title}" />
+            <h4>${item.title}</h4>
+            <p>${item.price.value} ${item.price.currency}</p>
+            <a href="${item.itemWebUrl}?mkevt=1&mkcid=1&mkrid=711-53200-19255-0&campid=${campaignId}&customid=${customId}&toolid=10001" target="_blank" class="button">View on eBay</a>
           </div>
         `).join('')}
       </div>
