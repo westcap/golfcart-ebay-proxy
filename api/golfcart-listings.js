@@ -45,6 +45,7 @@ export default async function handler(req, res) {
     }
 
     const html = `
+      <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&display=swap" rel="stylesheet">
       <style>
         .ebay-grid {
           display: grid;
@@ -52,8 +53,7 @@ export default async function handler(req, res) {
           gap: 24px;
           margin: 40px 0;
           padding: 0 10px;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-            Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+          font-family: 'Assistant', sans-serif;
         }
         .ebay-card {
           border: 1px solid #e5e7eb;
