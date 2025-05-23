@@ -45,7 +45,6 @@ export default async function handler(req, res) {
     }
 
     const html = `
-      <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&display=swap" rel="stylesheet">
       <style>
         .ebay-grid {
           display: grid;
@@ -53,7 +52,8 @@ export default async function handler(req, res) {
           gap: 24px;
           margin: 40px 0;
           padding: 0 10px;
-          font-family: 'Assistant', sans-serif;
+          font-family: 'Assistant', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+            Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
         }
         .ebay-card {
           border: 1px solid #e5e7eb;
@@ -66,6 +66,7 @@ export default async function handler(req, res) {
           justify-content: space-between;
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
           transition: transform 0.2s ease, box-shadow 0.2s ease;
+          min-height: 360px;
         }
         .ebay-card:hover {
           transform: translateY(-4px);
@@ -82,15 +83,15 @@ export default async function handler(req, res) {
           font-size: 16px;
           color: #1f2937;
           margin: 0 0 8px;
-          min-height: 3.2em;
+          min-height: 4.8em;
           overflow: hidden;
           display: -webkit-box;
-          -webkit-line-clamp: 2;
+          -webkit-line-clamp: 3;
           -webkit-box-orient: vertical;
         }
         .ebay-card p {
           font-weight: bold;
-          font-size: 15px;
+          font-size: 16px;
           color: #10b981;
           margin: 0 0 12px;
         }
