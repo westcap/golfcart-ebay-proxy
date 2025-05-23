@@ -24,14 +24,11 @@ export default async function handler(req, res) {
     const token = tokenData.access_token;
     if (!token) throw new Error("No access token received");
 
-    const filterParts = [
-      'itemLocationCountry:US',
-      'conditionIds:{1000|3000}'
-    ];
+    // Use safer string-based logic for filters
+    let filter = 'itemLocationCountry:US,conditionIds:{1000|3000}';
     if (maxPrice) {
-      filterParts.push(`price:[..${maxPrice}]`);
+      filter += `,price:[..${maxPrice}]`;
     }
-    const filter = filterParts.join(',');
 
     const searchURL = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchTerm)}&category_ids=${categoryId}&filter=${filter}&sort=ENDING_SOONEST&limit=20&offset=${offset}`;
 
