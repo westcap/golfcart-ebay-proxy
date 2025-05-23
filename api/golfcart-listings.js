@@ -52,7 +52,16 @@ export default async function handler(req, res) {
       });
     }
 
-    // ✅ Pagination after filtering
+    // ✅ Manual price sort fallback (low to high)
+    if (sort === 'PRICE_ASCENDING') {
+      items.sort((a, b) => {
+        const priceA = parseFloat(a?.price?.value || 0);
+        const priceB = parseFloat(b?.price?.value || 0);
+        return priceA - priceB;
+      });
+    }
+
+    // ✅ Pagination after filtering and sorting
     const paginatedItems = items.slice(offset, offset + limit);
 
     // Render HTML
