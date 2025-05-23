@@ -8,7 +8,8 @@ export default async function handler(req, res) {
   const offset = parseInt(req.query.offset) || 0;
   const maxPrice = parseFloat(req.query.maxPrice) || null;
   const sort = req.query.sort || 'ENDING_SOONEST';
-  const fetchLimit = 100; // always fetch 100, but show only 20
+  const limit = 20;
+  const fetchLimit = 100;
 
   const authHeader = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
@@ -26,14 +27,10 @@ export default async function handler(req, res) {
     const token = tokenData.access_token;
     if (!token) throw new Error("No access token received");
 
-    const filterParts = [
+    const filter = [
       'itemLocationCountry:US',
       'conditionIds:{1000|3000}'
-    ];
-    if (maxPrice) {
-      filterParts.push(`price:[..${maxPrice}]`);
-    }
-    const filter = filterParts.join(',');
+    ].join(',');
 
     const searchURL = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchTerm)}&category_ids=${categoryId}&filter=${filter}&sort=${sort}&limit=${fetchLimit}&offset=0`;
 
@@ -47,7 +44,7 @@ export default async function handler(req, res) {
     const data = await response.json();
     let items = data.itemSummaries || [];
 
-    // Enforce max price strictly
+    // ✅ Manual post-filter for price
     if (maxPrice) {
       items = items.filter(item => {
         const price = parseFloat(item?.price?.value || 0);
@@ -55,9 +52,10 @@ export default async function handler(req, res) {
       });
     }
 
-    // Slice for pagination
-    items = items.slice(offset, offset + 20);
+    // ✅ Pagination after filtering
+    const paginatedItems = items.slice(offset, offset + limit);
 
+    // Render HTML
     const html = `
       <html>
         <head>
@@ -117,7 +115,7 @@ export default async function handler(req, res) {
         </head>
         <body>
           <div class="ebay-grid">
-            ${items.map(item => {
+            ${paginatedItems.map(item => {
               const title = item.title?.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
               const formattedPrice = `$${Number(item.price.value).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
               return `
