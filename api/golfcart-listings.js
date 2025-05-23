@@ -132,6 +132,13 @@ export default async function handler(req, res) {
           `;
         }).join('')}
       </div>
+
+      <script>
+        window.parent.postMessage({ 
+          type: "setIframeHeight", 
+          height: document.body.scrollHeight 
+        }, "*");
+      </script>
     `;
 
     res.setHeader('Cache-Control', 's-maxage=600, stale-while-revalidate');
@@ -139,6 +146,6 @@ export default async function handler(req, res) {
 
   } catch (err) {
     console.error("❌ ERROR:", err);
-    res.status(500).send(`<pre>Server error: ${err.message}</pre>`);
+    res.status(500).send(\`<pre>Server error: \${err.message}</pre>\`);
   }
 }
