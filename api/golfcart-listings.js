@@ -33,7 +33,9 @@ export default async function handler(req, res) {
     }
     const filter = filterParts.join(',');
 
-    const searchURL = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchTerm)}&category_ids=${categoryId}&filter=${filter}&sort=ENDING_SOONEST&limit=100&offset=${offset}`;
+    const limit = maxPrice ? 100 : 20;
+const searchURL = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchTerm)}&category_ids=${categoryId}&filter=${filter}&sort=ENDING_SOONEST&limit=${limit}&offset=${offset}`;
+
 
     const response = await fetch(searchURL, {
       headers: {
