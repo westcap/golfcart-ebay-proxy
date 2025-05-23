@@ -112,12 +112,17 @@ export default async function handler(req, res) {
               `;
             }).join('')}
           </div>
-          <script>
-            window.parent.postMessage(
-              { type: 'setIframeHeight', height: document.body.scrollHeight },
-              '*'
-            );
-          </script>
+<script>
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      window.parent.postMessage(
+        { type: 'setIframeHeight', height: document.body.scrollHeight },
+        '*'
+      );
+    }, 100);
+  });
+</script>
+
         </body>
       </html>
     `;
