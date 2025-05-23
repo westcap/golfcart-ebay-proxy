@@ -6,6 +6,7 @@ export default async function handler(req, res) {
   const searchTerm = req.query.query || 'Golf Cart';
   const categoryId = '181476';
   const offset = parseInt(req.query.offset) || 0;
+  const maxPrice = parseFloat(req.query.maxPrice) || null;
 
   const authHeader = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
@@ -23,10 +24,14 @@ export default async function handler(req, res) {
     const token = tokenData.access_token;
     if (!token) throw new Error("No access token received");
 
-    const filter = [
+    const filterParts = [
       'itemLocationCountry:US',
       'conditionIds:{1000|3000}'
-    ].join(',');
+    ];
+    if (maxPrice) {
+      filterParts.push(`price:[..${maxPrice}]`);
+    }
+    const filter = filterParts.join(',');
 
     const searchURL = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchTerm)}&category_ids=${categoryId}&filter=${filter}&sort=ENDING_SOONEST&limit=20&offset=${offset}`;
 
@@ -112,17 +117,16 @@ export default async function handler(req, res) {
               `;
             }).join('')}
           </div>
-<script>
-  window.addEventListener('load', () => {
-    setTimeout(() => {
-      window.parent.postMessage(
-        { type: 'setIframeHeight', height: document.body.scrollHeight },
-        '*'
-      );
-    }, 100);
-  });
-</script>
-
+          <script>
+            window.addEventListener('load', () => {
+              setTimeout(() => {
+                window.parent.postMessage(
+                  { type: 'setIframeHeight', height: document.body.scrollHeight },
+                  '*'
+                );
+              }, 100);
+            });
+          </script>
         </body>
       </html>
     `;
