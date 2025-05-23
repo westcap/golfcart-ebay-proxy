@@ -48,16 +48,17 @@ export default async function handler(req, res) {
       <style>
         .ebay-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
           gap: 24px;
           margin: 40px 0;
           padding: 0 10px;
+          font-family: inherit;
         }
         .ebay-card {
           border: 1px solid #e5e7eb;
           border-radius: 12px;
           background-color: #fff;
-          text-align: center;
+          text-align: left;
           padding: 16px;
           display: flex;
           flex-direction: column;
@@ -92,7 +93,7 @@ export default async function handler(req, res) {
           color: #10b981;
           margin: 0 0 12px;
         }
-        .ebay-card a.button {
+        .ebay-card .button {
           background: #000;
           color: #fff;
           padding: 10px 14px;
@@ -100,10 +101,12 @@ export default async function handler(req, res) {
           text-decoration: none;
           font-weight: 600;
           font-size: 14px;
+          text-align: center;
+          align-self: center;
           transition: background 0.2s ease;
-          margin-top: auto;
+          width: 100%;
         }
-        .ebay-card a.button:hover {
+        .ebay-card .button:hover {
           background: #222;
         }
         @media (max-width: 600px) {
@@ -116,11 +119,12 @@ export default async function handler(req, res) {
       <div class="ebay-grid">
         ${items.map(item => {
           const title = item.title?.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
+          const formattedPrice = `$${Number(item.price.value).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
           return `
             <div class="ebay-card">
               <img src="${item.image?.imageUrl}" alt="${title}" />
               <h4>${title}</h4>
-              <p>${item.price.value} ${item.price.currency}</p>
+              <p>${formattedPrice}</p>
               <a href="${item.itemWebUrl}?mkevt=1&mkcid=1&mkrid=711-53200-19255-0&campid=${campaignId}&customid=${customId}&toolid=10001" target="_blank" class="button">View on eBay</a>
             </div>
           `;
