@@ -52,7 +52,8 @@ export default async function handler(req, res) {
           gap: 24px;
           margin: 40px 0;
           padding: 0 10px;
-          font-family: inherit;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+            Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
         }
         .ebay-card {
           border: 1px solid #e5e7eb;
