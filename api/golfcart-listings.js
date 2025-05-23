@@ -121,24 +121,4 @@ export default async function handler(req, res) {
       <div class="ebay-grid">
         ${items.map(item => {
           const title = item.title?.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
-          const formattedPrice = `$${Number(item.price.value).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-          return `
-            <div class="ebay-card">
-              <img src="${item.image?.imageUrl}" alt="${title}" />
-              <h4>${title}</h4>
-              <p>${formattedPrice}</p>
-              <a href="${item.itemWebUrl}?mkevt=1&mkcid=1&mkrid=711-53200-19255-0&campid=${campaignId}&customid=${customId}&toolid=10001" target="_blank" class="button">View on eBay</a>
-            </div>
-          `;
-        }).join('')}
-      </div>
-    `;
-
-    res.setHeader('Cache-Control', 's-maxage=600, stale-while-revalidate');
-    res.status(200).send(html);
-
-  } catch (err) {
-    console.error("❌ ERROR:", err);
-    res.status(500).send(`<pre>Server error: ${err.message}</pre>`);
-  }
-}
+          const formattedPrice = `$${Number(item.price.value).toLocaleString('en-US', { minimumFract
