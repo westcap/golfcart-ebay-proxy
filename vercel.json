@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "api/tomberlin-listings.js",
+      "src": "api/golfcart-listings.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
-      "src": "/api/tomberlin-listings",
-      "dest": "/api/tomberlin-listings.js"
+      "src": "/api/golfcart-listings",
+      "dest": "/api/golfcart-listings.js"
     }
   ]
 }
