@@ -138,14 +138,6 @@ export default async function handler(req, res) {
               `;
             }).join('')}
           </div>
-          <script>
-            window.addEventListener('load', function () {
-              window.parent.postMessage(
-                { type: 'setIframeHeight', height: document.body.scrollHeight },
-                '*'
-              );
-            });
-          </script>
         </body>
       </html>
     `;
