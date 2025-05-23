@@ -24,13 +24,12 @@ export default async function handler(req, res) {
     const token = tokenData.access_token;
     if (!token) throw new Error("No access token received");
 
-    // Use safer string-based logic for filters
-    let filter = 'itemLocationCountry:US,conditionIds:{1000|3000}';
-    if (maxPrice) {
-      filter += `,price:[..${maxPrice}]`;
-    }
+    const filter = [
+      'itemLocationCountry:US',
+      'conditionIds:{1000|3000}'
+    ].join(',');
 
-    const searchURL = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchTerm)}&category_ids=${categoryId}&filter=${filter}&sort=ENDING_SOONEST&limit=20&offset=${offset}`;
+    const searchURL = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchTerm)}&category_ids=${categoryId}&filter=${filter}&sort=ENDING_SOONEST&limit=50&offset=${offset}`;
 
     const response = await fetch(searchURL, {
       headers: {
@@ -40,7 +39,15 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
-    const items = data.itemSummaries || [];
+    let items = data.itemSummaries || [];
+
+    // ✅ Post-filter based on maxPrice since the API's filter may not apply properly
+    if (maxPrice) {
+      items = items.filter(item => {
+        const price = parseFloat(item?.price?.value || 0);
+        return !isNaN(price) && price <= maxPrice;
+      });
+    }
 
     const html = `
       <html>
