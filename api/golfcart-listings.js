@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   const offset = parseInt(req.query.offset) || 0;
   const maxPrice = parseFloat(req.query.maxPrice) || null;
   const sort = req.query.sort || 'ENDING_SOONEST';
-  const limit = 20;
+  const fetchLimit = 100; // always fetch 100, but show only 20
 
   const authHeader = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
@@ -35,7 +35,7 @@ export default async function handler(req, res) {
     }
     const filter = filterParts.join(',');
 
-    const searchURL = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchTerm)}&category_ids=${categoryId}&filter=${filter}&sort=${sort}&limit=${limit}&offset=${offset}`;
+    const searchURL = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchTerm)}&category_ids=${categoryId}&filter=${filter}&sort=${sort}&limit=${fetchLimit}&offset=0`;
 
     const response = await fetch(searchURL, {
       headers: {
@@ -45,7 +45,18 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
-    const items = data.itemSummaries || [];
+    let items = data.itemSummaries || [];
+
+    // Enforce max price strictly
+    if (maxPrice) {
+      items = items.filter(item => {
+        const price = parseFloat(item?.price?.value || 0);
+        return !isNaN(price) && price <= maxPrice;
+      });
+    }
+
+    // Slice for pagination
+    items = items.slice(offset, offset + 20);
 
     const html = `
       <html>
