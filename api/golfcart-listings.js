@@ -24,12 +24,16 @@ export default async function handler(req, res) {
     const token = tokenData.access_token;
     if (!token) throw new Error("No access token received");
 
-    const filter = [
+    const filterParts = [
       'itemLocationCountry:US',
       'conditionIds:{1000|3000}'
-    ].join(',');
+    ];
+    if (maxPrice) {
+      filterParts.push(`price:[..${maxPrice}]`);
+    }
+    const filter = filterParts.join(',');
 
-    const searchURL = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchTerm)}&category_ids=${categoryId}&filter=${filter}&sort=ENDING_SOONEST&limit=50&offset=${offset}`;
+    const searchURL = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchTerm)}&category_ids=${categoryId}&filter=${filter}&sort=ENDING_SOONEST&limit=100&offset=${offset}`;
 
     const response = await fetch(searchURL, {
       headers: {
@@ -41,7 +45,7 @@ export default async function handler(req, res) {
     const data = await response.json();
     let items = data.itemSummaries || [];
 
-    // ✅ Post-filter based on maxPrice since the API's filter may not apply properly
+    // Post-filter just in case
     if (maxPrice) {
       items = items.filter(item => {
         const price = parseFloat(item?.price?.value || 0);
