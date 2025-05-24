@@ -84,7 +84,6 @@ export default async function handler(req, res) {
               padding: 16px;
               display: flex;
               flex-direction: column;
-              justify-content: space-between;
               box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
               min-height: 360px;
             }
@@ -98,6 +97,14 @@ export default async function handler(req, res) {
             .ebay-card h4 {
               font-size: 16px;
               margin: 0 0 8px;
+              min-height: 3.6em;
+              overflow: hidden;
+              display: -webkit-box;
+              -webkit-line-clamp: 2;
+              -webkit-box-orient: vertical;
+            }
+            .ebay-card .spacer {
+              flex-grow: 1;
             }
             .ebay-card p {
               font-weight: bold;
@@ -114,7 +121,6 @@ export default async function handler(req, res) {
               font-weight: 600;
               text-align: center;
               display: block;
-              margin-top: auto;
             }
           </style>
         </head>
@@ -123,8 +129,6 @@ export default async function handler(req, res) {
             ${paginatedItems.map(item => {
               const title = item.title?.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
               const formattedPrice = `$${Number(item.price.value).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-              
-              // ✅ Proper affiliate link builder
               const separator = item.itemWebUrl.includes('?') ? '&' : '?';
               const affiliateLink = `${item.itemWebUrl}${separator}mkevt=1&mkcid=1&mkrid=711-53200-19255-0&campid=${campaignId}&customid=${customId}&toolid=10001`;
 
@@ -132,6 +136,7 @@ export default async function handler(req, res) {
                 <div class="ebay-card">
                   <img src="${item.image?.imageUrl}" alt="${title}" />
                   <h4>${title}</h4>
+                  <div class="spacer"></div>
                   <p>${formattedPrice}</p>
                   <a href="${affiliateLink}" target="_blank" class="button">View on eBay</a>
                 </div>
