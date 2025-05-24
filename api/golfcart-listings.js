@@ -77,16 +77,21 @@ export default async function handler(req, res) {
               padding: 0 10px;
             }
             .ebay-card {
+              display: flex;
+              flex-direction: column;
+              justify-content: flex-start;
               border: 1px solid #e5e7eb;
               border-radius: 12px;
               background-color: #fff;
-              padding: 16px;
-              display: flex;
-              flex-direction: column;
-              justify-content: space-between;
               box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+              padding: 16px;
               height: 100%;
               min-height: 360px;
+              transition: transform 0.2s ease, box-shadow 0.2s ease;
+            }
+            .ebay-card:hover {
+              transform: translateY(-4px);
+              box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
             }
             .ebay-card img {
               width: 100%;
@@ -99,20 +104,17 @@ export default async function handler(req, res) {
               font-size: 16px;
               color: #1f2937;
               margin: 0 0 8px;
-              min-height: 4.8em;
+              min-height: 3.6em;
               overflow: hidden;
               display: -webkit-box;
-              -webkit-line-clamp: 3;
+              -webkit-line-clamp: 2;
               -webkit-box-orient: vertical;
             }
-            .price-and-button {
-              margin-top: auto;
-            }
-            .price-and-button p {
+            .price {
               font-weight: bold;
               font-size: 16px;
               color: #10b981;
-              margin: 0 0 12px;
+              margin: 8px 0 12px;
             }
             .button {
               background: #000;
@@ -122,8 +124,12 @@ export default async function handler(req, res) {
               text-decoration: none;
               font-weight: 600;
               text-align: center;
-              display: block;
+              font-size: 14px;
               width: 100%;
+              margin-top: auto;
+            }
+            .button:hover {
+              background: #222;
             }
           </style>
         </head>
@@ -139,10 +145,8 @@ export default async function handler(req, res) {
                 <div class="ebay-card">
                   <img src="${item.image?.imageUrl}" alt="${title}" />
                   <h4>${title}</h4>
-                  <div class="price-and-button">
-                    <p>${formattedPrice}</p>
-                    <a href="${affiliateLink}" target="_blank" class="button">View on eBay</a>
-                  </div>
+                  <div class="price">${formattedPrice}</div>
+                  <a href="${affiliateLink}" target="_blank" class="button">View on eBay</a>
                 </div>
               `;
             }).join('')}
