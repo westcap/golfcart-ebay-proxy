@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   const campaignId = req.query.campaignId || '5339111183';
   const customId = req.query.customid || 'golfcartshop';
   const searchTerm = req.query.query || 'Golf Cart';
-  const categoryId = '181476';
+  const categoryId = req.query.categoryId || '181476'; // ✅ NOW DYNAMIC
   const offset = parseInt(req.query.offset) || 0;
   const maxPrice = parseFloat(req.query.maxPrice) || null;
   const sort = req.query.sort || 'ENDING_SOONEST';
