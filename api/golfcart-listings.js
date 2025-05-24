@@ -11,13 +11,13 @@ export default async function handler(req, res) {
   const limit = 20;
   const fetchLimit = 100;
 
-  const authHeader = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+  const authHeader = Buffer.from(${clientId}:${clientSecret}).toString('base64');
 
   try {
     const tokenRes = await fetch('https://api.ebay.com/identity/v1/oauth2/token', {
       method: 'POST',
       headers: {
-        'Authorization': `Basic ${authHeader}`,
+        'Authorization': Basic ${authHeader},
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       body: 'grant_type=client_credentials&scope=https://api.ebay.com/oauth/api_scope'
@@ -32,11 +32,11 @@ export default async function handler(req, res) {
       'conditionIds:{1000|3000}'
     ].join(',');
 
-    const searchURL = `https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchTerm)}&category_ids=${categoryId}&filter=${filter}&sort=${sort}&limit=${fetchLimit}&offset=0`;
+    const searchURL = https://api.ebay.com/buy/browse/v1/item_summary/search?q=${encodeURIComponent(searchTerm)}&category_ids=${categoryId}&filter=${filter}&sort=${sort}&limit=${fetchLimit}&offset=0;
 
     const response = await fetch(searchURL, {
       headers: {
-        'Authorization': `Bearer ${token}`,
+        'Authorization': Bearer ${token},
         'X-EBAY-C-MARKETPLACE-ID': 'EBAY_US'
       }
     });
@@ -61,7 +61,7 @@ export default async function handler(req, res) {
 
     const paginatedItems = items.slice(offset, offset + limit);
 
-    const html = `
+    const html = 
       <html>
         <head>
           <style>
@@ -84,7 +84,6 @@ export default async function handler(req, res) {
               padding: 16px;
               display: flex;
               flex-direction: column;
-              justify-content: space-between;
               box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
               min-height: 360px;
             }
@@ -97,7 +96,15 @@ export default async function handler(req, res) {
             }
             .ebay-card h4 {
               font-size: 16px;
-              margin: 0 0 8px;
+              margin: 0 0 4px;
+              min-height: 3.6em;
+              overflow: hidden;
+              display: -webkit-box;
+              -webkit-line-clamp: 2;
+              -webkit-box-orient: vertical;
+            }
+            .ebay-card .spacer {
+              flex-grow: 1;
             }
             .ebay-card p {
               font-weight: bold;
@@ -114,7 +121,6 @@ export default async function handler(req, res) {
               font-weight: 600;
               text-align: center;
               display: block;
-              margin-top: auto;
             }
           </style>
         </head>
@@ -122,20 +128,19 @@ export default async function handler(req, res) {
           <div class="ebay-grid">
             ${paginatedItems.map(item => {
               const title = item.title?.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
-              const formattedPrice = `$${Number(item.price.value).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-              
-              // ✅ Proper affiliate link builder
+              const formattedPrice = $${Number(item.price.value).toLocaleString('en-US', { minimumFractionDigits: 2 })};
               const separator = item.itemWebUrl.includes('?') ? '&' : '?';
-              const affiliateLink = `${item.itemWebUrl}${separator}mkevt=1&mkcid=1&mkrid=711-53200-19255-0&campid=${campaignId}&customid=${customId}&toolid=10001`;
+              const affiliateLink = ${item.itemWebUrl}${separator}mkevt=1&mkcid=1&mkrid=711-53200-19255-0&campid=${campaignId}&customid=${customId}&toolid=10001;
 
-              return `
+              return 
                 <div class="ebay-card">
                   <img src="${item.image?.imageUrl}" alt="${title}" />
                   <h4>${title}</h4>
+                  <div class="spacer"></div>
                   <p>${formattedPrice}</p>
                   <a href="${affiliateLink}" target="_blank" class="button">View on eBay</a>
                 </div>
-              `;
+              ;
             }).join('')}
           </div>
           <script>
@@ -150,12 +155,12 @@ export default async function handler(req, res) {
           </script>
         </body>
       </html>
-    `;
+    ;
 
     res.setHeader('Content-Type', 'text/html');
     res.status(200).send(html);
   } catch (err) {
     console.error("❌ ERROR:", err);
-    res.status(500).send(`<pre>Server error: ${err.message}</pre>`);
+    res.status(500).send(<pre>Server error: ${err.message}</pre>);
   }
 }
