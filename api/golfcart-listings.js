@@ -1,4 +1,3 @@
-
 export default async function handler(req, res) {
   const clientId = 'WestCapL-GolfCart-PRD-ff04600b9-577103ed';
   const clientSecret = 'PRD-f04600b914a6-c74e-43c1-a342-aa43';
@@ -45,6 +44,7 @@ export default async function handler(req, res) {
     const data = await response.json();
     let items = data.itemSummaries || [];
 
+    // ✅ Manual post-filter for price
     if (maxPrice) {
       items = items.filter(item => {
         const price = parseFloat(item?.price?.value || 0);
@@ -52,6 +52,7 @@ export default async function handler(req, res) {
       });
     }
 
+    // ✅ Manual price sort fallback (low to high)
     if (sort === 'PRICE_ASCENDING') {
       items.sort((a, b) => {
         const priceA = parseFloat(a?.price?.value || 0);
@@ -60,8 +61,10 @@ export default async function handler(req, res) {
       });
     }
 
+    // ✅ Pagination after filtering and sorting
     const paginatedItems = items.slice(offset, offset + limit);
 
+    // Render HTML
     const html = `
       <html>
         <head>
@@ -124,17 +127,14 @@ export default async function handler(req, res) {
             ${paginatedItems.map(item => {
               const title = item.title?.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
               const formattedPrice = `$${Number(item.price.value).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-              const baseUrl = item.itemWebUrl;
-              const affParams = `mkevt=1&mkcid=1&mkrid=711-53200-19255-0&campid=${campaignId}&customid=${customId}&toolid=10001`;
-              const url = baseUrl.includes('?') ? \`\${baseUrl}&\${affParams}\` : \`\${baseUrl}?\${affParams}\`;
-              return \`
+              return `
                 <div class="ebay-card">
-                  <img src="\${item.image?.imageUrl}" alt="\${title}" />
-                  <h4>\${title}</h4>
-                  <p>\${formattedPrice}</p>
-                  <a href="\${url}" target="_blank" class="button">View on eBay</a>
+                  <img src="${item.image?.imageUrl}" alt="${title}" />
+                  <h4>${title}</h4>
+                  <p>${formattedPrice}</p>
+                  <a href="${item.itemWebUrl}?mkevt=1&mkcid=1&mkrid=711-53200-19255-0&campid=${campaignId}&customid=${customId}&toolid=10001" target="_blank" class="button">View on eBay</a>
                 </div>
-              \`;
+              `;
             }).join('')}
           </div>
           <script>
