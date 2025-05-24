@@ -44,7 +44,6 @@ export default async function handler(req, res) {
     const data = await response.json();
     let items = data.itemSummaries || [];
 
-    // Optional price filter
     if (maxPrice) {
       items = items.filter(item => {
         const price = parseFloat(item?.price?.value || 0);
@@ -52,7 +51,6 @@ export default async function handler(req, res) {
       });
     }
 
-    // Optional manual sort
     if (sort === 'PRICE_ASCENDING') {
       items.sort((a, b) => {
         const priceA = parseFloat(a?.price?.value || 0);
@@ -69,8 +67,7 @@ export default async function handler(req, res) {
           <style>
             body {
               margin: 0;
-              font-family: 'Assistant', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
-                Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+              font-family: 'Assistant', sans-serif;
             }
             .ebay-grid {
               display: grid;
@@ -88,12 +85,8 @@ export default async function handler(req, res) {
               flex-direction: column;
               justify-content: space-between;
               box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-              transition: transform 0.2s ease, box-shadow 0.2s ease;
+              height: 100%;
               min-height: 360px;
-            }
-            .ebay-card:hover {
-              transform: translateY(-4px);
-              box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
             }
             .ebay-card img {
               width: 100%;
@@ -121,26 +114,16 @@ export default async function handler(req, res) {
               color: #10b981;
               margin: 0 0 12px;
             }
-            .price-and-button .button {
+            .button {
               background: #000;
               color: #fff;
-              padding: 10px 14px;
+              padding: 10px;
               border-radius: 6px;
               text-decoration: none;
               font-weight: 600;
-              font-size: 14px;
               text-align: center;
               display: block;
               width: 100%;
-              transition: background 0.2s ease;
-            }
-            .price-and-button .button:hover {
-              background: #222;
-            }
-            @media (max-width: 600px) {
-              .ebay-grid {
-                grid-template-columns: 1fr;
-              }
             }
           </style>
         </head>
