@@ -95,6 +95,9 @@ export default async function handler(req, res) {
               border-radius: 8px;
               margin-bottom: 12px;
             }
+            .card-content {
+              margin-bottom: auto;
+            }
             .ebay-card h4 {
               font-size: 16px;
               margin: 0 0 8px;
@@ -123,16 +126,16 @@ export default async function handler(req, res) {
             ${paginatedItems.map(item => {
               const title = item.title?.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
               const formattedPrice = `$${Number(item.price.value).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-              
-              // ✅ Proper affiliate link builder
               const separator = item.itemWebUrl.includes('?') ? '&' : '?';
               const affiliateLink = `${item.itemWebUrl}${separator}mkevt=1&mkcid=1&mkrid=711-53200-19255-0&campid=${campaignId}&customid=${customId}&toolid=10001`;
 
               return `
                 <div class="ebay-card">
                   <img src="${item.image?.imageUrl}" alt="${title}" />
-                  <h4>${title}</h4>
-                  <p>${formattedPrice}</p>
+                  <div class="card-content">
+                    <h4>${title}</h4>
+                    <p>${formattedPrice}</p>
+                  </div>
                   <a href="${affiliateLink}" target="_blank" class="button">View on eBay</a>
                 </div>
               `;
@@ -156,6 +159,6 @@ export default async function handler(req, res) {
     res.status(200).send(html);
   } catch (err) {
     console.error("❌ ERROR:", err);
-    res.status(500).send(`<pre>Server error: ${err.message}</pre>`);
+    res.status(500).send(\`<pre>Server error: \${err.message}</pre>\`);
   }
 }
