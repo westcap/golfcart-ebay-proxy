@@ -44,6 +44,7 @@ export default async function handler(req, res) {
     const data = await response.json();
     let items = data.itemSummaries || [];
 
+    // Optional price filter
     if (maxPrice) {
       items = items.filter(item => {
         const price = parseFloat(item?.price?.value || 0);
@@ -51,6 +52,7 @@ export default async function handler(req, res) {
       });
     }
 
+    // Optional manual sort
     if (sort === 'PRICE_ASCENDING') {
       items.sort((a, b) => {
         const priceA = parseFloat(a?.price?.value || 0);
@@ -67,7 +69,8 @@ export default async function handler(req, res) {
           <style>
             body {
               margin: 0;
-              font-family: 'Assistant', sans-serif;
+              font-family: 'Assistant', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+                Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             }
             .ebay-grid {
               display: grid;
@@ -80,13 +83,17 @@ export default async function handler(req, res) {
               border: 1px solid #e5e7eb;
               border-radius: 12px;
               background-color: #fff;
-              text-align: left;
               padding: 16px;
               display: flex;
               flex-direction: column;
               justify-content: space-between;
               box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+              transition: transform 0.2s ease, box-shadow 0.2s ease;
               min-height: 360px;
+            }
+            .ebay-card:hover {
+              transform: translateY(-4px);
+              box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
             }
             .ebay-card img {
               width: 100%;
@@ -97,26 +104,43 @@ export default async function handler(req, res) {
             }
             .ebay-card h4 {
               font-size: 16px;
-              margin: 0 0 12px;
+              color: #1f2937;
+              margin: 0 0 8px;
+              min-height: 4.8em;
+              overflow: hidden;
+              display: -webkit-box;
+              -webkit-line-clamp: 3;
+              -webkit-box-orient: vertical;
             }
-            .price-button-wrapper {
+            .price-and-button {
               margin-top: auto;
             }
-            .price-button-wrapper p {
+            .price-and-button p {
               font-weight: bold;
               font-size: 16px;
               color: #10b981;
               margin: 0 0 12px;
             }
-            .button {
+            .price-and-button .button {
               background: #000;
               color: #fff;
-              padding: 10px;
+              padding: 10px 14px;
               border-radius: 6px;
               text-decoration: none;
               font-weight: 600;
+              font-size: 14px;
               text-align: center;
               display: block;
+              width: 100%;
+              transition: background 0.2s ease;
+            }
+            .price-and-button .button:hover {
+              background: #222;
+            }
+            @media (max-width: 600px) {
+              .ebay-grid {
+                grid-template-columns: 1fr;
+              }
             }
           </style>
         </head>
@@ -125,8 +149,6 @@ export default async function handler(req, res) {
             ${paginatedItems.map(item => {
               const title = item.title?.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
               const formattedPrice = `$${Number(item.price.value).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-
-              // ✅ Leave the affiliate link logic as-is
               const separator = item.itemWebUrl.includes('?') ? '&' : '?';
               const affiliateLink = `${item.itemWebUrl}${separator}mkevt=1&mkcid=1&mkrid=711-53200-19255-0&campid=${campaignId}&customid=${customId}&toolid=10001`;
 
@@ -134,7 +156,7 @@ export default async function handler(req, res) {
                 <div class="ebay-card">
                   <img src="${item.image?.imageUrl}" alt="${title}" />
                   <h4>${title}</h4>
-                  <div class="price-button-wrapper">
+                  <div class="price-and-button">
                     <p>${formattedPrice}</p>
                     <a href="${affiliateLink}" target="_blank" class="button">View on eBay</a>
                   </div>
