@@ -44,6 +44,7 @@ export default async function handler(req, res) {
     const data = await response.json();
     let items = data.itemSummaries || [];
 
+    // ✅ Manual post-filter for price
     if (maxPrice) {
       items = items.filter(item => {
         const price = parseFloat(item?.price?.value || 0);
@@ -51,6 +52,7 @@ export default async function handler(req, res) {
       });
     }
 
+    // ✅ Manual price sort fallback (low to high)
     if (sort === 'PRICE_ASCENDING') {
       items.sort((a, b) => {
         const priceA = parseFloat(a?.price?.value || 0);
@@ -59,8 +61,10 @@ export default async function handler(req, res) {
       });
     }
 
+    // ✅ Pagination after filtering and sorting
     const paginatedItems = items.slice(offset, offset + limit);
 
+    // Render HTML
     const html = `
       <html>
         <head>
@@ -80,13 +84,13 @@ export default async function handler(req, res) {
               border: 1px solid #e5e7eb;
               border-radius: 12px;
               background-color: #fff;
+              text-align: left;
+              padding: 16px;
               display: flex;
               flex-direction: column;
               justify-content: space-between;
-              padding: 16px;
-              text-align: left;
               box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-              min-height: 380px;
+              min-height: 360px;
             }
             .ebay-card img {
               width: 100%;
@@ -97,18 +101,9 @@ export default async function handler(req, res) {
             }
             .ebay-card h4 {
               font-size: 16px;
-              color: #1f2937;
               margin: 0 0 8px;
-              min-height: 4.8em;
-              overflow: hidden;
-              display: -webkit-box;
-              -webkit-line-clamp: 3;
-              -webkit-box-orient: vertical;
             }
-            .price-button-wrapper {
-              margin-top: auto;
-            }
-            .price-button-wrapper p {
+            .ebay-card p {
               font-weight: bold;
               font-size: 16px;
               color: #10b981;
@@ -123,7 +118,7 @@ export default async function handler(req, res) {
               font-weight: 600;
               text-align: center;
               display: block;
-              width: 100%;
+              margin-top: auto;
             }
           </style>
         </head>
@@ -132,17 +127,12 @@ export default async function handler(req, res) {
             ${paginatedItems.map(item => {
               const title = item.title?.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
               const formattedPrice = `$${Number(item.price.value).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
-              const separator = item.itemWebUrl.includes('?') ? '&' : '?';
-              const affiliateLink = `${item.itemWebUrl}${separator}mkevt=1&mkcid=1&mkrid=711-53200-19255-0&campid=${campaignId}&customid=${customId}&toolid=10001`;
-
               return `
                 <div class="ebay-card">
                   <img src="${item.image?.imageUrl}" alt="${title}" />
                   <h4>${title}</h4>
-                  <div class="price-button-wrapper">
-                    <p>${formattedPrice}</p>
-                    <a href="${affiliateLink}" target="_blank" class="button">View on eBay</a>
-                  </div>
+                  <p>${formattedPrice}</p>
+                  <a href="${item.itemWebUrl}?mkevt=1&mkcid=1&mkrid=711-53200-19255-0&campid=${campaignId}&customid=${customId}&toolid=10001" target="_blank" class="button">View on eBay</a>
                 </div>
               `;
             }).join('')}
