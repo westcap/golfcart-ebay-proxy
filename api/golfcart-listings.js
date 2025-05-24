@@ -103,9 +103,6 @@ export default async function handler(req, res) {
               -webkit-line-clamp: 2;
               -webkit-box-orient: vertical;
             }
-            .ebay-card .spacer {
-              flex-grow: 1;
-            }
             .ebay-card p {
               font-weight: bold;
               font-size: 16px;
@@ -136,7 +133,6 @@ export default async function handler(req, res) {
                 <div class="ebay-card">
                   <img src="${item.image?.imageUrl}" alt="${title}" />
                   <h4>${title}</h4>
-                  <div class="spacer"></div>
                   <p>${formattedPrice}</p>
                   <a href="${affiliateLink}" target="_blank" class="button">View on eBay</a>
                 </div>
