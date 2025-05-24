@@ -84,6 +84,7 @@ export default async function handler(req, res) {
               padding: 16px;
               display: flex;
               flex-direction: column;
+              justify-content: space-between;
               box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
               min-height: 360px;
             }
@@ -96,12 +97,7 @@ export default async function handler(req, res) {
             }
             .ebay-card h4 {
               font-size: 16px;
-              margin: 0 0 4px;
-              min-height: 3.6em;
-              overflow: hidden;
-              display: -webkit-box;
-              -webkit-line-clamp: 2;
-              -webkit-box-orient: vertical;
+              margin: 0 0 8px;
             }
             .ebay-card p {
               font-weight: bold;
@@ -118,6 +114,7 @@ export default async function handler(req, res) {
               font-weight: 600;
               text-align: center;
               display: block;
+              margin-top: auto;
             }
           </style>
         </head>
@@ -126,6 +123,8 @@ export default async function handler(req, res) {
             ${paginatedItems.map(item => {
               const title = item.title?.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
               const formattedPrice = `$${Number(item.price.value).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+              
+              // ✅ Proper affiliate link builder
               const separator = item.itemWebUrl.includes('?') ? '&' : '?';
               const affiliateLink = `${item.itemWebUrl}${separator}mkevt=1&mkcid=1&mkrid=711-53200-19255-0&campid=${campaignId}&customid=${customId}&toolid=10001`;
 
