@@ -96,7 +96,7 @@ export default async function handler(req, res) {
             }
             .ebay-card h4 {
               font-size: 16px;
-              margin: 0 0 8px;
+              margin: 0 0 4px;
               min-height: 3.6em;
               overflow: hidden;
               display: -webkit-box;
