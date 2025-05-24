@@ -44,7 +44,6 @@ export default async function handler(req, res) {
     const data = await response.json();
     let items = data.itemSummaries || [];
 
-    // ✅ Manual post-filter for price
     if (maxPrice) {
       items = items.filter(item => {
         const price = parseFloat(item?.price?.value || 0);
@@ -52,7 +51,6 @@ export default async function handler(req, res) {
       });
     }
 
-    // ✅ Manual price sort fallback (low to high)
     if (sort === 'PRICE_ASCENDING') {
       items.sort((a, b) => {
         const priceA = parseFloat(a?.price?.value || 0);
@@ -61,10 +59,8 @@ export default async function handler(req, res) {
       });
     }
 
-    // ✅ Pagination after filtering and sorting
     const paginatedItems = items.slice(offset, offset + limit);
 
-    // Render HTML
     const html = `
       <html>
         <head>
@@ -127,12 +123,17 @@ export default async function handler(req, res) {
             ${paginatedItems.map(item => {
               const title = item.title?.toLowerCase().replace(/\b\w/g, l => l.toUpperCase());
               const formattedPrice = `$${Number(item.price.value).toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+              
+              // ✅ Proper affiliate link builder
+              const separator = item.itemWebUrl.includes('?') ? '&' : '?';
+              const affiliateLink = `${item.itemWebUrl}${separator}mkevt=1&mkcid=1&mkrid=711-53200-19255-0&campid=${campaignId}&customid=${customId}&toolid=10001`;
+
               return `
                 <div class="ebay-card">
                   <img src="${item.image?.imageUrl}" alt="${title}" />
                   <h4>${title}</h4>
                   <p>${formattedPrice}</p>
-                  <a href="${item.itemWebUrl}?mkevt=1&mkcid=1&mkrid=711-53200-19255-0&campid=${campaignId}&customid=${customId}&toolid=10001" target="_blank" class="button">View on eBay</a>
+                  <a href="${affiliateLink}" target="_blank" class="button">View on eBay</a>
                 </div>
               `;
             }).join('')}
