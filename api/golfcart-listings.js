@@ -44,6 +44,7 @@ export default async function handler(req, res) {
     const data = await response.json();
     let items = data.itemSummaries || [];
 
+    // ✅ Price filter
     if (maxPrice) {
       items = items.filter(item => {
         const price = parseFloat(item?.price?.value || 0);
@@ -51,6 +52,7 @@ export default async function handler(req, res) {
       });
     }
 
+    // ✅ Sort fallback
     if (sort === 'PRICE_ASCENDING') {
       items.sort((a, b) => {
         const priceA = parseFloat(a?.price?.value || 0);
@@ -59,8 +61,10 @@ export default async function handler(req, res) {
       });
     }
 
+    // ✅ Paginate
     const paginatedItems = items.slice(offset, offset + limit);
 
+    // ✅ Render HTML
     const html = `
       <html>
         <head>
@@ -80,13 +84,11 @@ export default async function handler(req, res) {
               border: 1px solid #e5e7eb;
               border-radius: 12px;
               background-color: #fff;
-              text-align: left;
               padding: 16px;
               display: flex;
               flex-direction: column;
-              justify-content: space-between;
               box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-              min-height: 360px;
+              height: 100%;
             }
             .ebay-card img {
               width: 100%;
@@ -95,14 +97,14 @@ export default async function handler(req, res) {
               border-radius: 8px;
               margin-bottom: 12px;
             }
-            .card-content {
-              margin-bottom: auto;
-            }
             .ebay-card h4 {
               font-size: 16px;
-              margin: 0 0 8px;
+              margin: 0 0 12px;
             }
-            .ebay-card p {
+            .price-and-button {
+              margin-top: auto;
+            }
+            .price-and-button p {
               font-weight: bold;
               font-size: 16px;
               color: #10b981;
@@ -117,7 +119,6 @@ export default async function handler(req, res) {
               font-weight: 600;
               text-align: center;
               display: block;
-              margin-top: auto;
             }
           </style>
         </head>
@@ -132,11 +133,11 @@ export default async function handler(req, res) {
               return `
                 <div class="ebay-card">
                   <img src="${item.image?.imageUrl}" alt="${title}" />
-                  <div class="card-content">
-                    <h4>${title}</h4>
+                  <h4>${title}</h4>
+                  <div class="price-and-button">
                     <p>${formattedPrice}</p>
+                    <a href="${affiliateLink}" target="_blank" class="button">View on eBay</a>
                   </div>
-                  <a href="${affiliateLink}" target="_blank" class="button">View on eBay</a>
                 </div>
               `;
             }).join('')}
